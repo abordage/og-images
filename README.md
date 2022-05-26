@@ -32,15 +32,15 @@ Create Open Graph images (og:image, twitter:image, vk:image) for each (or some) 
 
 </p>
 
-Use the page title to create an eye-catching page preview when users share the link on social networks or instant
+Use page title to create an eye-catching page preview when users share the link on social networks or instant
 messengers. [Learn more](https://ogp.me) about Open Graph.
 
 ## Features:
 
 - Image generation with your text and site name
-- Fully customized (see [configuration](#configuration))
+- Fully customizable (see [configuration](#configuration))
 - Small image size (15-50 Kb) with high resolution and quality ([check it](./docs/examples.md))
-- Preset [aspect ratios](#images-aspect-ratios) for popular social networks
+- Aspect ratios [presets](#images-aspect-ratios) for popular social networks
 
 [▶ **See examples**](./docs/examples.md)
 
@@ -77,8 +77,7 @@ $openGraphImage->make($text)->save($path);
 ```
 
 > **Note**  
-> All images are encoded in `PNG` format as it provides the best ratio between size and quality. For the same reason,
-> the
+> All images are encoded in `PNG` format as it provides the best ratio between size/quality. For the same reason, the
 > package uses the `Imagick` driver - in tests, it showed an advantage in speed and final size of the generated images.
 
 ## Usage
@@ -134,7 +133,7 @@ $config = [
     | App Name
     |--------------------------------------------------------------------------
     |
-    | Set to null to disable
+    | Set null to disable
     |
     | Supported: string or null
     |
@@ -199,7 +198,7 @@ $config = [
     | App Name Decoration Style
     |--------------------------------------------------------------------------
     |
-    | Set to null to disable
+    | Set null to disable
     |
     | Supported: "line", "label", "rectangle", null
     |
@@ -227,7 +226,7 @@ $config = [
     | Text Font
     |--------------------------------------------------------------------------
     |
-    | If set to null, will be used Preset Font (Roboto Regular)
+    | If set null, will be used Preset Font (Roboto Regular)
     |
     | Supported: "absolute/path/to/your/font.ttf", null
     |
@@ -239,7 +238,7 @@ $config = [
     | App Name Font
     |--------------------------------------------------------------------------
     |
-    | If set to null, will be used Preset Font (Roboto Medium)
+    | If set null, will be used Preset Font (Roboto Medium)
     |
     | Supported: "absolute/path/to/your/font.ttf", null
     |
@@ -274,7 +273,7 @@ $config = [
 
 ## Roadmap
 
-Add the ability to use gradients and images for the background.
+Add ability to use gradients and images for the background.
 
 ## Testing
 
