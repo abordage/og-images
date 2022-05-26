@@ -14,18 +14,18 @@ Create Open Graph images (og:image, twitter:image, vk:image) for each (or some) 
 </a>
 
 <a href="https://github.com/abordage/og-images/actions/workflows/tests.yml" title="GitHub Tests Status">
-    <img alt="GitHub Tests Status" src="https://img.shields.io/github/workflow/status/abordage/og-images/tests?label=tests">
+    <img alt="GitHub Tests Status" src="https://img.shields.io/github/workflow/status/abordage/og-images/Tests?label=tests">
 </a>
 
-<a href="https://github.com/abordage/og-images/actions/workflows/tests.yml" title="GitHub Code Style Status">
-    <img alt="GitHub Code Style Status" src="https://img.shields.io/github/workflow/status/abordage/og-images/php-cs-fixer?label=code%20style">
+<a href="https://github.com/abordage/og-images/actions/workflows/php-cs-fixer.yml" title="GitHub Code Style Status">
+    <img alt="GitHub Code Style Status" src="https://img.shields.io/github/workflow/status/abordage/og-images/PHP%20CS%20Fixer?label=code%20style">
 </a>
 
 <a href="https://www.php.net/" title="PHP version">
     <img alt="Packagist PHP Version Support" src="https://img.shields.io/packagist/php-v/abordage/og-images">
 </a>
 
-<a href="https://github.com/abordage/og-images/blob/master/README.md" title="License">
+<a href="https://github.com/abordage/og-images/blob/master/LICENSE.md" title="License">
     <img alt="License" src="https://img.shields.io/github/license/abordage/og-images">
 </a>
 
