@@ -2,13 +2,14 @@
 
 Create Open Graph images (og:image, twitter:image, vk:image) for each (or some) site pages.
 
-<p style="text-align: center;">
+<p style="text-align: center;" align="center">
 <a href="https://github.com/abordage/og-images/blob/master/docs/examples.md" title="Open Graph Images Generator">
     <img alt="Open Graph Images Generator" src="https://github.com/abordage/og-images/blob/master/docs/images/default-og-image-830x435.png">
 </a>
 </p>
 
-<p style="text-align: center;">
+<p style="text-align: center;" align="center">
+
 <a href="https://packagist.org/packages/abordage/og-images" title="Packagist version">
     <img alt="Packagist Version" src="https://img.shields.io/packagist/v/abordage/og-images">
 </a>
