@@ -462,12 +462,15 @@ class OpenGraphImages
             switch ($this->appNameDecorationStyle) {
                 case 'line':
                     $this->setLineCoordinates();
+
                     break;
                 case 'label':
                     $this->setLabelCoordinates();
+
                     break;
                 case 'rectangle':
                     $this->setRectangleCoordinates();
+
                     break;
             }
         }
