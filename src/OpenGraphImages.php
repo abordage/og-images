@@ -456,23 +456,32 @@ class OpenGraphImages
         $this->setTextParameters();
 
         if (is_string($this->appName)) {
-            $this->setAppNameBox();
-            $this->setAppNameCoordinates();
+            $this->setAppNameParameters();
+        }
+    }
 
-            switch ($this->appNameDecorationStyle) {
-                case 'line':
-                    $this->setLineCoordinates();
+    /**
+     * @throws ImagickException
+     * @throws ImagickDrawException
+     */
+    protected function setAppNameParameters(): void
+    {
+        $this->setAppNameBox();
+        $this->setAppNameCoordinates();
 
-                    break;
-                case 'label':
-                    $this->setLabelCoordinates();
+        switch ($this->appNameDecorationStyle) {
+            case 'line':
+                $this->setLineCoordinates();
 
-                    break;
-                case 'rectangle':
-                    $this->setRectangleCoordinates();
+                break;
+            case 'label':
+                $this->setLabelCoordinates();
 
-                    break;
-            }
+                break;
+            case 'rectangle':
+                $this->setRectangleCoordinates();
+
+                break;
         }
     }
 
