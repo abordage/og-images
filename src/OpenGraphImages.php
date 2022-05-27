@@ -221,11 +221,11 @@ class OpenGraphImages
         $this->appNameDecorationStyle = $config['app_name_decoration_style'];
         $this->appNameDecorationColor = $config['app_name_decoration_color'];
 
-        if (! is_null($this->fontPath) && file_exists($this->fontPath)) {
+        if (!is_null($this->fontPath) && file_exists($this->fontPath)) {
             $this->font = $this->fontPath;
         }
 
-        if (! is_null($this->appNameFontPath) && file_exists($this->appNameFontPath)) {
+        if (!is_null($this->appNameFontPath) && file_exists($this->appNameFontPath)) {
             $this->appNameFont = $this->appNameFontPath;
         }
     }
@@ -278,8 +278,8 @@ class OpenGraphImages
         $dirname = $info['dirname'];
         $filename = $info['filename'];
 
-        if (! is_dir($dirname)) {
-            if (! mkdir($dirname, 0755, true)) {
+        if (!is_dir($dirname)) {
+            if (!mkdir($dirname, 0755, true)) {
                 return false;
             }
         }
@@ -454,11 +454,23 @@ class OpenGraphImages
     protected function setParameters(): void
     {
         $this->setTextParameters();
-        $this->setAppNameParameters();
 
-        $this->setLineCoordinates();
-        $this->setLabelCoordinates();
-        $this->setRectangleCoordinates();
+        if (is_string($this->appName)) {
+            $this->setAppNameBox();
+            $this->setAppNameCoordinates();
+
+            switch ($this->appNameDecorationStyle) {
+                case 'line':
+                    $this->setLineCoordinates();
+                    break;
+                case 'label':
+                    $this->setLabelCoordinates();
+                    break;
+                case 'rectangle':
+                    $this->setRectangleCoordinates();
+                    break;
+            }
+        }
     }
 
     /**
@@ -516,7 +528,7 @@ class OpenGraphImages
      * @throws ImagickException
      * @throws ImagickDrawException
      */
-    protected function setAppNameParameters(): void
+    protected function setAppNameBox(): void
     {
         $maxAppNameWidth = intval($this->imageWidth * 0.4);
         $maxAppNameHeight = intval($this->imageHeight * 0.2);
@@ -533,7 +545,10 @@ class OpenGraphImages
                 }
             }
         }
+    }
 
+    protected function setAppNameCoordinates(): void
+    {
         switch ($this->appNamePosition) {
             case 'top-left':
             case 'left-top':
@@ -579,10 +594,6 @@ class OpenGraphImages
 
     protected function setLineCoordinates(): void
     {
-        if ($this->appNameDecorationStyle !== 'line') {
-            return;
-        }
-
         $defaultPaddingLine = 7;
         $rectangleHeight = intval(round($this->imageWidth / 200));
 
@@ -614,10 +625,6 @@ class OpenGraphImages
 
     protected function setLabelCoordinates(): void
     {
-        if ($this->appNameDecorationStyle !== 'label') {
-            return;
-        }
-
         $rectangleWidth = 30;
         $rectangleHeight = $this->appNameBoxHeight + ($this->appNameDefaultPaddingY * 2);
 
@@ -675,10 +682,6 @@ class OpenGraphImages
 
     protected function setRectangleCoordinates(): void
     {
-        if ($this->appNameDecorationStyle !== 'rectangle') {
-            return;
-        }
-
         $defaultPaddingCenterLabel = 30;
         $rectangleWidth = (($this->appNameDefaultPaddingX) * 2) + $this->appNameBoxWidth;
         $rectangleHeight = $this->appNameBoxHeight + ($this->appNameDefaultPaddingY * 2);
