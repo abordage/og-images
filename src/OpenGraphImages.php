@@ -46,6 +46,18 @@ class OpenGraphImages
     private int $appNameBoxWidth;
     private int $appNameBoxHeight;
 
+    private int $appNameStartX;
+    private int $appNameStartY;
+
+    private int $appNameDefaultPaddingY = 30;
+    private int $appNameDefaultPaddingX = 60;
+
+    private int $rectangleX1;
+    private int $rectangleX2;
+    private int $rectangleY1;
+    private int $rectangleY2;
+
+
     private Imagick $image;
     private ?string $imageBlob = null;
 
@@ -286,18 +298,12 @@ class OpenGraphImages
     {
         $this->image = new Imagick();
         $this->image->newImage($this->imageWidth, $this->imageHeight, $this->backgroundColor);
-
-        /** @var string $text */
-        $text = preg_replace('~\s+~', ' ', $text);
         $this->text = $text;
 
-        $this->setTextParameters();
+        $this->setParameters();
         $this->createText();
-
-        if ($this->appName) {
-            $this->setAppNameParameters();
-            $this->createAppName();
-        }
+        $this->createAppNameDecoration();
+        $this->createAppName();
 
         $format = 'png';
         $compression = Imagick::COMPRESSION_ZIP;
@@ -360,6 +366,99 @@ class OpenGraphImages
             }
         }
         $this->text = $text;
+    }
+
+    /**
+     * @throws ImagickException
+     * @throws ImagickDrawException
+     * @throws ImagickPixelException
+     */
+    protected function createText(): void
+    {
+        $draw = new ImagickDraw();
+        $draw->setStrokeAntialias(true);
+        $draw->setTextAntialias(true);
+        $draw->setFont($this->font);
+        $draw->setFontSize($this->fontSize);
+        $draw->setFillColor(new ImagickPixel($this->textColor));
+
+        switch (strtolower($this->textAlignment)) {
+            case 'center':
+                $align = Imagick::ALIGN_CENTER;
+
+                break;
+            case 'right':
+                $align = Imagick::ALIGN_RIGHT;
+
+                break;
+            default:
+                $align = Imagick::ALIGN_LEFT;
+
+                break;
+        }
+        $draw->setTextAlignment($align);
+
+        // corrections
+        $dimensions = $this->image->queryFontMetrics($draw, $this->text);
+        $this->textStartY = $this->textStartY + $dimensions['characterHeight'];
+
+        $this->image->annotateImage($draw, $this->textStartX, $this->textStartY, 0, $this->text);
+    }
+
+    /**
+     * @throws ImagickException
+     * @throws ImagickPixelException
+     * @throws ImagickDrawException
+     */
+    protected function createAppName(): void
+    {
+        if (is_null($this->appName)) {
+            return;
+        }
+
+        $draw = new ImagickDraw();
+        $draw->setStrokeAntialias(true);
+        $draw->setTextAntialias(true);
+        $draw->setFont($this->appNameFont);
+        $draw->setFontSize($this->appNameFontSize);
+        $draw->setFillColor(new ImagickPixel($this->appNameColor));
+
+        // corrections
+        $dimensions = $this->image->queryFontMetrics($draw, $this->appName, false);
+        $this->appNameStartY = $this->appNameStartY + $dimensions['characterHeight'];
+
+        $this->image->annotateImage($draw, $this->appNameStartX, $this->appNameStartY, 0, $this->appName);
+    }
+
+    /**
+     * @throws ImagickDrawException
+     * @throws ImagickPixelException
+     * @throws ImagickException
+     */
+    protected function createAppNameDecoration(): void
+    {
+        if (is_null($this->appName) || is_null($this->appNameDecorationStyle)) {
+            return;
+        }
+
+        $draw = new ImagickDraw();
+        $draw->setFillColor(new ImagickPixel($this->appNameDecorationColor));
+        $draw->rectangle($this->rectangleX1, $this->rectangleY1, $this->rectangleX2, $this->rectangleY2);
+        $this->image->drawImage($draw);
+    }
+
+    /**
+     * @throws ImagickException
+     * @throws ImagickDrawException
+     */
+    protected function setParameters(): void
+    {
+        $this->setTextParameters();
+        $this->setAppNameParameters();
+
+        $this->setLineCoordinates();
+        $this->setLabelCoordinates();
+        $this->setRectangleCoordinates();
     }
 
     /**
@@ -434,221 +533,219 @@ class OpenGraphImages
                 }
             }
         }
-    }
-
-    /**
-     * @throws ImagickException
-     * @throws ImagickDrawException
-     * @throws ImagickPixelException
-     */
-    protected function createText(): void
-    {
-        $draw = new ImagickDraw();
-        $draw->setStrokeAntialias(true);
-        $draw->setTextAntialias(true);
-        $draw->setFont($this->font);
-        $draw->setFontSize($this->fontSize);
-        $draw->setFillColor(new ImagickPixel($this->textColor));
-
-        switch (strtolower($this->textAlignment)) {
-            case 'center':
-                $align = Imagick::ALIGN_CENTER;
-
-                break;
-
-            case 'right':
-                $align = Imagick::ALIGN_RIGHT;
-
-                break;
-
-            default:
-                $align = Imagick::ALIGN_LEFT;
-
-                break;
-        }
-        $draw->setTextAlignment($align);
-
-        // corrections
-        $dimensions = $this->image->queryFontMetrics($draw, $this->text);
-        $this->textStartY = $this->textStartY + $dimensions['characterHeight'];
-
-        $this->image->annotateImage($draw, $this->textStartX, $this->textStartY, 0, $this->text);
-    }
-
-    /**
-     * @throws ImagickException
-     * @throws ImagickPixelException
-     * @throws ImagickDrawException
-     */
-    protected function createAppName(): void
-    {
-        if (is_null($this->appName)) {
-            return;
-        }
-
-        $defaultPaddingY = 30;
-        $defaultPaddingX = 60;
-
-        $defaultPaddingCenterLabel = 30;
-        $defaultPaddingLine = 10;
-
-        switch ($this->appNameDecorationStyle) {
-            case 'label':
-                $rectangleWidth = 30;
-                $rectangleHeight = $this->appNameBoxHeight + ($defaultPaddingY * 2);
-
-                break;
-            case 'rectangle':
-                $rectangleWidth = (($defaultPaddingX) * 2) + $this->appNameBoxWidth;
-                $rectangleHeight = $this->appNameBoxHeight + ($defaultPaddingY * 2);
-
-                break;
-            default:
-                $rectangleWidth = 0;
-                $rectangleHeight = 0;
-        }
 
         switch ($this->appNamePosition) {
             case 'top-left':
             case 'left-top':
-                $startY = $defaultPaddingY;
-                $startX = $defaultPaddingX;
-
-                $rectangleY1 = 0;
-                $rectangleY2 = $rectangleHeight;
-                $rectangleX1 = 0;
-                $rectangleX2 = $rectangleWidth;
-
-                $lineY1 = $lineY2 = $defaultPaddingY + $this->appNameBoxHeight + $defaultPaddingLine;
-                $lineX1 = $defaultPaddingX;
-                $lineX2 = $defaultPaddingX + $this->appNameBoxWidth;
+                $this->appNameStartY = $this->appNameDefaultPaddingY;
+                $this->appNameStartX = $this->appNameDefaultPaddingX;
 
                 break;
             case 'bottom-left':
             case 'left-bottom':
-                $startY = $this->imageHeight - $defaultPaddingY - $this->appNameBoxHeight;
-                $startX = $defaultPaddingX;
-
-                $rectangleY1 = $this->imageHeight - $rectangleHeight;
-                $rectangleY2 = $this->imageHeight;
-                $rectangleX1 = 0;
-                $rectangleX2 = $rectangleWidth;
-
-                $lineY1 = $lineY2 = $startY - $defaultPaddingLine;
-                $lineX1 = $startX;
-                $lineX2 = $startX + $this->appNameBoxWidth;
+                $this->appNameStartY = $this->imageHeight - $this->appNameDefaultPaddingY - $this->appNameBoxHeight;
+                $this->appNameStartX = $this->appNameDefaultPaddingX;
 
                 break;
             case 'top-center':
             case 'center-top':
-                $startY = $defaultPaddingY;
-                $startX = intval(($this->imageWidth / 2) - ($this->appNameBoxWidth / 2));
-
-                $rectangleY1 = 0;
-                $rectangleY2 = $rectangleHeight;
-                $rectangleX1 = $startX - $defaultPaddingCenterLabel;
-                $rectangleX2 = $rectangleX1 + $this->appNameBoxWidth + ($defaultPaddingCenterLabel * 2);
-
-                $lineY1 = $lineY2 = $defaultPaddingY + $this->appNameBoxHeight + $defaultPaddingLine;
-                $lineX1 = $startX;
-                $lineX2 = $startX + $this->appNameBoxWidth;
+                $this->appNameStartY = $this->appNameDefaultPaddingY;
+                $this->appNameStartX = intval(($this->imageWidth / 2) - ($this->appNameBoxWidth / 2));
 
                 break;
             case 'bottom-center':
             case 'center-bottom':
-                $startY = $this->imageHeight - $defaultPaddingY - $this->appNameBoxHeight;
-                $startX = intval(($this->imageWidth / 2) - ($this->appNameBoxWidth / 2));
-
-                $rectangleY1 = $this->imageHeight - $rectangleHeight;
-                $rectangleY2 = $this->imageHeight;
-                $rectangleX1 = $startX - $defaultPaddingCenterLabel;
-                $rectangleX2 = $rectangleX1 + $this->appNameBoxWidth + ($defaultPaddingCenterLabel * 2);
-
-                $lineY1 = $lineY2 = $startY - $defaultPaddingLine;
-                $lineX1 = $startX;
-                $lineX2 = $startX + $this->appNameBoxWidth;
+                $this->appNameStartY = $this->imageHeight - $this->appNameDefaultPaddingY - $this->appNameBoxHeight;
+                $this->appNameStartX = intval(($this->imageWidth / 2) - ($this->appNameBoxWidth / 2));
 
                 break;
             case 'top-right':
             case 'right-top':
-                $startY = $defaultPaddingY;
-                $startX = $this->imageWidth - $defaultPaddingX - $this->appNameBoxWidth;
-
-                $rectangleY1 = 0;
-                $rectangleY2 = $rectangleHeight;
-                $rectangleX1 = $this->imageWidth - $rectangleWidth;
-                $rectangleX2 = $this->imageWidth;
-
-                $lineY1 = $lineY2 = $defaultPaddingY + $this->appNameBoxHeight + $defaultPaddingLine;
-                $lineX1 = $startX;
-                $lineX2 = $startX + $this->appNameBoxWidth;
+                $this->appNameStartY = $this->appNameDefaultPaddingY;
+                $this->appNameStartX = $this->imageWidth - $this->appNameDefaultPaddingX - $this->appNameBoxWidth;
 
                 break;
             case 'bottom-right':
             case 'right-bottom':
-                $startY = $this->imageHeight - $defaultPaddingY - $this->appNameBoxHeight;
-                $startX = $this->imageWidth - $defaultPaddingX - $this->appNameBoxWidth;
-
-                $rectangleY1 = $this->imageHeight - $rectangleHeight;
-                $rectangleY2 = $this->imageHeight;
-                $rectangleX1 = $this->imageWidth - $rectangleWidth;
-                $rectangleX2 = $this->imageWidth;
-
-                $lineY1 = $lineY2 = $startY - $defaultPaddingLine;
-                $lineX1 = $startX;
-                $lineX2 = $startX + $this->appNameBoxWidth;
+                $this->appNameStartY = $this->imageHeight - $this->appNameDefaultPaddingY - $this->appNameBoxHeight;
+                $this->appNameStartX = $this->imageWidth - $this->appNameDefaultPaddingX - $this->appNameBoxWidth;
 
                 break;
             default:
-                $startY = $defaultPaddingY;
-                $startX = $this->imageWidth - $defaultPaddingX - $this->appNameBoxWidth;
+                $this->appNameStartY = $this->appNameDefaultPaddingY;
+                $this->appNameStartX = $this->imageWidth - $this->appNameDefaultPaddingX - $this->appNameBoxWidth;
+        }
+    }
 
-                $rectangleY1 = $this->imageHeight - $rectangleHeight;
-                $rectangleY2 = $this->imageHeight;
-                $rectangleX1 = $this->imageWidth - $rectangleWidth;
-                $rectangleX2 = $this->imageWidth;
-
-                $lineY1 = $lineY2 = $defaultPaddingY + $this->appNameBoxHeight + $defaultPaddingLine;
-                $lineX1 = $startX;
-                $lineX2 = $startX + $this->appNameBoxWidth;
+    protected function setLineCoordinates(): void
+    {
+        if ($this->appNameDecorationStyle !== 'line') {
+            return;
         }
 
-        switch ($this->appNameDecorationStyle) {
-            case 'label':
-            case 'rectangle':
-                $draw = new ImagickDraw();
-                $draw->setFillColor(new ImagickPixel($this->appNameDecorationColor));
-                $draw->rectangle($rectangleX1, $rectangleY1, $rectangleX2, $rectangleY2);
-                $this->image->drawImage($draw);
+        $defaultPaddingLine = 7;
+        $rectangleHeight = intval(round($this->imageWidth / 200));
+
+        switch ($this->appNamePosition) {
+            case 'top-left':
+            case 'top-center':
+            case 'top-right':
+            case 'left-top':
+            case 'center-top':
+            case 'right-top':
+                $this->rectangleX1 = $this->appNameStartX;
+                $this->rectangleY1 = $this->appNameStartY + $this->appNameBoxHeight + $defaultPaddingLine;
 
                 break;
-            case 'line':
-                $draw = new ImagickDraw();
-                $draw->setFillColor(new ImagickPixel($this->appNameDecorationColor));
-                $draw->setStrokeColor(new ImagickPixel($this->appNameDecorationColor));
-                $draw->setStrokeWidth(intval(round($this->imageWidth / 200)));
-                $draw->line($lineX1, $lineY1, $lineX2, $lineY2);
-                $this->image->drawImage($draw);
+            case 'bottom-left':
+            case 'bottom-center':
+            case 'bottom-right':
+            case 'center-bottom':
+            case 'right-bottom':
+            case 'left-bottom':
+            default:
+                $this->rectangleX1 = $this->appNameStartX;
+                $this->rectangleY1 = $this->appNameStartY - $defaultPaddingLine - $rectangleHeight;
+        }
+
+        $this->rectangleX2 = $this->rectangleX1 + $this->appNameBoxWidth;
+        $this->rectangleY2 = $this->rectangleY1 + $rectangleHeight;
+    }
+
+    protected function setLabelCoordinates(): void
+    {
+        if ($this->appNameDecorationStyle !== 'label') {
+            return;
+        }
+
+        $rectangleWidth = 30;
+        $rectangleHeight = $this->appNameBoxHeight + ($this->appNameDefaultPaddingY * 2);
+
+        switch ($this->appNamePosition) {
+            case 'top-left':
+            case 'left-top':
+                $this->rectangleX1 = 0;
+                $this->rectangleY1 = 0;
+
+                $this->rectangleX2 = $rectangleWidth;
+                $this->rectangleY2 = $rectangleHeight;
+
+                break;
+            case 'bottom-left':
+            case 'left-bottom':
+                $this->rectangleX1 = 0;
+                $this->rectangleY1 = $this->imageHeight - $rectangleHeight;
+
+                $this->rectangleX2 = $rectangleWidth;
+                $this->rectangleY2 = $this->imageHeight;
+
+                break;
+            case 'top-center':
+            case 'center-top':
+            case 'bottom-center':
+            case 'center-bottom':
+            default:
+                $this->rectangleX1 = 0;
+                $this->rectangleY1 = 0;
+
+                $this->rectangleX2 = 0;
+                $this->rectangleY2 = 0;
+
+                break;
+            case 'top-right':
+            case 'right-top':
+                $this->rectangleX1 = $this->imageWidth - $rectangleWidth;
+                $this->rectangleY1 = 0;
+
+                $this->rectangleX2 = $this->imageWidth;
+                $this->rectangleY2 = $rectangleHeight;
+
+                break;
+            case 'bottom-right':
+            case 'right-bottom':
+                $this->rectangleX1 = $this->imageWidth - $rectangleWidth;
+                $this->rectangleY1 = $this->imageHeight - $rectangleHeight;
+
+                $this->rectangleX2 = $this->imageWidth;
+                $this->rectangleY2 = $this->imageHeight;
 
                 break;
         }
+    }
 
-        $draw = new ImagickDraw();
-        $draw->setStrokeAntialias(true);
-        $draw->setTextAntialias(true);
-        $draw->setFont($this->appNameFont);
-        $draw->setFontSize($this->appNameFontSize);
-        $draw->setFillColor(new ImagickPixel($this->appNameColor));
+    protected function setRectangleCoordinates(): void
+    {
+        if ($this->appNameDecorationStyle !== 'rectangle') {
+            return;
+        }
 
-        // corrections
-        $dimensions = $this->image->queryFontMetrics($draw, $this->appName);
-        $startY = $startY + $dimensions['characterHeight'];
+        $defaultPaddingCenterLabel = 30;
+        $rectangleWidth = (($this->appNameDefaultPaddingX) * 2) + $this->appNameBoxWidth;
+        $rectangleHeight = $this->appNameBoxHeight + ($this->appNameDefaultPaddingY * 2);
 
-        $this->image->annotateImage($draw, $startX, $startY, 0, $this->appName);
+        switch ($this->appNamePosition) {
+            case 'top-left':
+            case 'left-top':
+                $this->rectangleX1 = 0;
+                $this->rectangleY1 = 0;
+
+                $this->rectangleX2 = $rectangleWidth;
+                $this->rectangleY2 = $rectangleHeight;
+
+                break;
+            case 'bottom-left':
+            case 'left-bottom':
+                $this->rectangleX1 = 0;
+                $this->rectangleY1 = $this->imageHeight - $rectangleHeight;
+
+                $this->rectangleX2 = $rectangleWidth;
+                $this->rectangleY2 = $this->imageHeight;
+
+                break;
+            case 'top-center':
+            case 'center-top':
+                $this->rectangleX1 = $this->appNameStartX - $defaultPaddingCenterLabel;
+                $this->rectangleY1 = 0;
+
+                $this->rectangleX2 = $this->rectangleX1 + $this->appNameBoxWidth + ($defaultPaddingCenterLabel * 2);
+                $this->rectangleY2 = $rectangleHeight;
+
+                break;
+            case 'bottom-center':
+            case 'center-bottom':
+            default:
+                $this->rectangleX1 = $this->appNameStartX - $defaultPaddingCenterLabel;
+                $this->rectangleY1 = $this->imageHeight - $rectangleHeight;
+
+                $this->rectangleX2 = $this->rectangleX1 + $this->appNameBoxWidth + ($defaultPaddingCenterLabel * 2);
+                $this->rectangleY2 = $this->imageHeight;
+
+                break;
+            case 'top-right':
+            case 'right-top':
+                $this->rectangleX1 = $this->imageWidth - $rectangleWidth;
+                $this->rectangleY1 = 0;
+
+                $this->rectangleX2 = $this->imageWidth;
+                $this->rectangleY2 = $rectangleHeight;
+
+                break;
+            case 'bottom-right':
+            case 'right-bottom':
+                $this->rectangleX1 = $this->imageWidth - $rectangleWidth;
+                $this->rectangleY1 = $this->imageHeight - $rectangleHeight;
+
+                $this->rectangleX2 = $this->imageWidth;
+                $this->rectangleY2 = $this->imageHeight;
+
+                break;
+        }
     }
 
     protected function multiLine(string $string, int $width = 75, bool $cut = true): string
     {
+        /** @var string $string */
+        $string = preg_replace('~\s+~', ' ', $string);
         $break = "\n";
 
         $lines = explode($break, $string);
