@@ -221,11 +221,11 @@ class OpenGraphImages
         $this->appNameDecorationStyle = $config['app_name_decoration_style'];
         $this->appNameDecorationColor = $config['app_name_decoration_color'];
 
-        if (! is_null($this->fontPath) && file_exists($this->fontPath)) {
+        if (!is_null($this->fontPath) && file_exists($this->fontPath)) {
             $this->font = $this->fontPath;
         }
 
-        if (! is_null($this->appNameFontPath) && file_exists($this->appNameFontPath)) {
+        if (!is_null($this->appNameFontPath) && file_exists($this->appNameFontPath)) {
             $this->appNameFont = $this->appNameFontPath;
         }
     }
@@ -278,8 +278,8 @@ class OpenGraphImages
         $dirname = $info['dirname'];
         $filename = $info['filename'];
 
-        if (! is_dir($dirname)) {
-            if (! mkdir($dirname, 0755, true)) {
+        if (!is_dir($dirname)) {
+            if (!mkdir($dirname, 0755, true)) {
                 return false;
             }
         }
