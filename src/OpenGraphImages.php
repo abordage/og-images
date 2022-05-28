@@ -634,7 +634,7 @@ class OpenGraphImages
     protected function setLineCoordinates(): void
     {
         $defaultPaddingLine = 7;
-        $rectangleHeight = intval(round($this->imageWidth / 200));
+        $rectangleHeight = intval($this->imageWidth / 200);
 
         switch ($this->appNamePosition) {
             case 'top-left':
