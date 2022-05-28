@@ -59,10 +59,21 @@ class OpenGraphImagesTest extends TestCase
     {
         $path = $this->directoryPath . '/test1/test2/test-image.png';
 
-        $openGraphImage = $this->openGraphImages->make($text);
-        $result = $openGraphImage->save($path);
+        $openGraphImages = new OpenGraphImages(['app_name' => 'website.test']);
+        $result = $openGraphImages->save($path);
+        $this->assertFalse($result);
+
+        $openGraphImages = new OpenGraphImages(['app_name' => 'website.test']);
+        $result = $openGraphImages->make($text)->save($path);
         $this->assertTrue($result);
         $this->assertEquals('image/png', mime_content_type($path));
+
+        vfsStream::setup('virtualReadOnlyDir', 644);
+        $virtualReadOnlyDir = vfsStream::url('virtualReadOnlyDir');
+
+        $openGraphImages = new OpenGraphImages(['app_name' => 'website.test']);
+        $result = $openGraphImages->make($text)->save($virtualReadOnlyDir);
+        $this->assertFalse($result);
     }
 
     /**
@@ -85,6 +96,17 @@ class OpenGraphImagesTest extends TestCase
         foreach ($lines as $line) {
             $this->assertLessThanOrEqual($width, mb_strlen($line));
         }
+    }
+
+    /**
+     * @dataProvider configProvider
+     */
+    public function testConfig(array $config): void
+    {
+        $openGraphImages = new OpenGraphImages($config);
+        $result = $openGraphImages->make('The Open Graph protocol enables any web page to become a rich object');
+        $this->assertInstanceOf(OpenGraphImages::class, $result);
+        $this->assertEquals('image/png', $this->getMimeTypeFromString($result->get()));
     }
 
     /**
@@ -112,8 +134,86 @@ class OpenGraphImagesTest extends TestCase
             around the world, as well as many other vital community projects",
             ],
             ["The Open Graph protocol enables any web page to become a rich object in a social graph"],
-            ["Blockchain’s youngest billionaire roasts world’s biggest cryptocurrency"],
             ["Another week of job slashes and crypto crashes"],
         ];
+    }
+
+    public function configProvider(): array
+    {
+        $appNames = [
+            'website.test',
+            null,
+        ];
+
+        $positions = [
+            'top-left',
+            'top-center',
+            'top-right',
+            'bottom-left',
+            'bottom-center',
+            'bottom-right',
+        ];
+
+        $styles = [
+            'line',
+            'label',
+            'rectangle',
+        ];
+
+        $alignments = [
+            'left',
+            'center',
+            'right',
+        ];
+
+        $stickyPositions = [
+            'left',
+            'center',
+            'right',
+        ];
+
+        $configs = [];
+
+        foreach ($positions as $position) {
+            foreach ($styles as $style) {
+                $configs[] = [
+                    [
+                        'app_name' => $appNames[0],
+                        'app_name_position' => $position,
+                        'app_name_decoration_style' => $style,
+                    ],
+                ];
+            }
+        }
+
+        foreach ($alignments as $alignment) {
+            foreach ($stickyPositions as $stickyPosition) {
+                $configs[] = [
+                    [
+                        'app_name' => $appNames[0],
+                        'text_alignment' => $alignment,
+                        'text_sticky' => $stickyPosition,
+                    ],
+                ];
+            }
+        }
+
+        foreach ($appNames as $appName) {
+            $configs[] = [
+                [
+                    'app_name' => $appName,
+                ],
+            ];
+        }
+
+        $configs[] = [
+            [
+                'font_path' => __DIR__ . '/../fonts/Roboto/Roboto-Regular.ttf',
+                'app_name_font_path' => __DIR__ . '/../fonts/Roboto/Roboto-Regular.ttf',
+            ],
+        ];
+
+
+        return $configs;
     }
 }

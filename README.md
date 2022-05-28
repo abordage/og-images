@@ -287,6 +287,7 @@ or
 
 ```bash
 composer test:phpunit
+composer test:phpunit-coverage
 composer test:phpstan
 composer test:phpcs
 ```

@@ -291,7 +291,7 @@ class OpenGraphImages
         $filename = $info['filename'];
 
         if (!is_dir($dirname)) {
-            if (!mkdir($dirname, 0755, true)) {
+            if (!@mkdir($dirname, 0755, true)) {
                 return false;
             }
         }
