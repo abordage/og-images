@@ -221,6 +221,18 @@ class OpenGraphImages
         $this->appNameDecorationStyle = $config['app_name_decoration_style'];
         $this->appNameDecorationColor = $config['app_name_decoration_color'];
 
+        $positions = [
+            'left-top' => 'top-left',
+            'center-top' => 'top-center',
+            'right-top' => 'top-right',
+
+            'left-bottom' => 'bottom-left',
+            'center-bottom' => 'bottom-center',
+            'right-bottom' => 'bottom-right',
+        ];
+
+        $this->appNamePosition = str_replace(array_keys($positions), array_values($positions), $this->appNamePosition);
+
         if (!is_null($this->fontPath) && file_exists($this->fontPath)) {
             $this->font = $this->fontPath;
         }
@@ -539,21 +551,7 @@ class OpenGraphImages
     {
         $this->setAppNameBox();
         $this->setAppNameCoordinates();
-
-        switch ($this->appNameDecorationStyle) {
-            case 'line':
-                $this->setLineCoordinates();
-
-                break;
-            case 'label':
-                $this->setLabelCoordinates();
-
-                break;
-            case 'rectangle':
-                $this->setRectangleCoordinates();
-
-                break;
-        }
+        $this->setAppDecorationCoordinates();
     }
 
     /**
@@ -585,37 +583,49 @@ class OpenGraphImages
 
         switch ($this->appNamePosition) {
             case 'top-left':
-            case 'left-top':
                 $this->appNameStartX = $this->appNameDefaultPaddingX;
 
                 break;
             case 'top-center':
-            case 'center-top':
                 $this->appNameStartX = intval(($this->imageWidth / 2) - ($this->appNameBoxWidth / 2));
 
                 break;
             case 'top-right':
-            case 'right-top':
             default:
                 $this->appNameStartX = $this->imageWidth - $this->appNameDefaultPaddingX - $this->appNameBoxWidth;
 
                 break;
             case 'bottom-left':
-            case 'left-bottom':
                 $this->appNameStartY = $this->imageHeight - $this->appNameDefaultPaddingY - $this->appNameBoxHeight;
                 $this->appNameStartX = $this->appNameDefaultPaddingX;
 
                 break;
             case 'bottom-center':
-            case 'center-bottom':
                 $this->appNameStartY = $this->imageHeight - $this->appNameDefaultPaddingY - $this->appNameBoxHeight;
                 $this->appNameStartX = intval(($this->imageWidth / 2) - ($this->appNameBoxWidth / 2));
 
                 break;
             case 'bottom-right':
-            case 'right-bottom':
                 $this->appNameStartY = $this->imageHeight - $this->appNameDefaultPaddingY - $this->appNameBoxHeight;
                 $this->appNameStartX = $this->imageWidth - $this->appNameDefaultPaddingX - $this->appNameBoxWidth;
+
+                break;
+        }
+    }
+
+    protected function setAppDecorationCoordinates(): void
+    {
+        switch ($this->appNameDecorationStyle) {
+            case 'line':
+                $this->setLineCoordinates();
+
+                break;
+            case 'label':
+                $this->setLabelCoordinates();
+
+                break;
+            case 'rectangle':
+                $this->setRectangleCoordinates();
 
                 break;
         }
@@ -630,18 +640,12 @@ class OpenGraphImages
             case 'top-left':
             case 'top-center':
             case 'top-right':
-            case 'left-top':
-            case 'center-top':
-            case 'right-top':
                 $this->rectangleY1 = $this->appNameStartY + $this->appNameBoxHeight + $defaultPaddingLine;
 
                 break;
             case 'bottom-left':
             case 'bottom-center':
             case 'bottom-right':
-            case 'center-bottom':
-            case 'right-bottom':
-            case 'left-bottom':
             default:
                 $this->rectangleY1 = $this->appNameStartY - $defaultPaddingLine - $rectangleHeight;
         }
@@ -658,7 +662,6 @@ class OpenGraphImages
 
         switch ($this->appNamePosition) {
             case 'top-left':
-            case 'left-top':
                 $this->rectangleX1 = 0;
                 $this->rectangleY1 = 0;
 
@@ -667,7 +670,6 @@ class OpenGraphImages
 
                 break;
             case 'bottom-left':
-            case 'left-bottom':
                 $this->rectangleX1 = 0;
                 $this->rectangleY1 = $this->imageHeight - $rectangleHeight;
 
@@ -676,9 +678,7 @@ class OpenGraphImages
 
                 break;
             case 'top-center':
-            case 'center-top':
             case 'bottom-center':
-            case 'center-bottom':
             default:
                 $this->rectangleX1 = 0;
                 $this->rectangleY1 = 0;
@@ -688,7 +688,6 @@ class OpenGraphImages
 
                 break;
             case 'top-right':
-            case 'right-top':
                 $this->rectangleX1 = $this->imageWidth - $rectangleWidth;
                 $this->rectangleY1 = 0;
 
@@ -697,7 +696,6 @@ class OpenGraphImages
 
                 break;
             case 'bottom-right':
-            case 'right-bottom':
                 $this->rectangleX1 = $this->imageWidth - $rectangleWidth;
                 $this->rectangleY1 = $this->imageHeight - $rectangleHeight;
 
@@ -716,7 +714,6 @@ class OpenGraphImages
 
         switch ($this->appNamePosition) {
             case 'top-left':
-            case 'left-top':
                 $this->rectangleX1 = 0;
                 $this->rectangleY1 = 0;
 
@@ -725,7 +722,6 @@ class OpenGraphImages
 
                 break;
             case 'bottom-left':
-            case 'left-bottom':
                 $this->rectangleX1 = 0;
                 $this->rectangleY1 = $this->imageHeight - $rectangleHeight;
 
@@ -734,7 +730,6 @@ class OpenGraphImages
 
                 break;
             case 'top-center':
-            case 'center-top':
                 $this->rectangleX1 = $this->appNameStartX - $defaultPaddingCenterLabel;
                 $this->rectangleY1 = 0;
 
@@ -743,7 +738,6 @@ class OpenGraphImages
 
                 break;
             case 'bottom-center':
-            case 'center-bottom':
             default:
                 $this->rectangleX1 = $this->appNameStartX - $defaultPaddingCenterLabel;
                 $this->rectangleY1 = $this->imageHeight - $rectangleHeight;
@@ -753,7 +747,6 @@ class OpenGraphImages
 
                 break;
             case 'top-right':
-            case 'right-top':
                 $this->rectangleX1 = $this->imageWidth - $rectangleWidth;
                 $this->rectangleY1 = 0;
 
@@ -762,7 +755,6 @@ class OpenGraphImages
 
                 break;
             case 'bottom-right':
-            case 'right-bottom':
                 $this->rectangleX1 = $this->imageWidth - $rectangleWidth;
                 $this->rectangleY1 = $this->imageHeight - $rectangleHeight;
 
