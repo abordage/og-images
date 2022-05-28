@@ -338,39 +338,6 @@ class OpenGraphImages
     /**
      * @throws ImagickException
      * @throws ImagickDrawException
-     */
-    protected function fitTextToBox(): void
-    {
-        for ($wordwrap = 50; $wordwrap >= 20; $wordwrap--) {
-            $text = $this->multiLine($this->text, $wordwrap);
-            $textBoxSize = $this->getTextBoxSize($text, $this->font, $this->fontSize);
-
-            $this->textBoxWidth = $textBoxSize['width'];
-            $this->textBoxHeight = $textBoxSize['height'];
-
-            if ($this->textBoxWidth <= $this->maxTextWidth) {
-                if ($this->textBoxHeight > $this->maxTextHeight) {
-                    for ($countLines = count(explode("\n", $text)); $countLines > 1; $countLines--) {
-                        $position = mb_strrpos($text, "\n") ?: null;
-                        $text = mb_substr($text, 0, $position);
-
-                        $textBoxSize = $this->getTextBoxSize($text, $this->font, $this->fontSize);
-                        $this->textBoxHeight = $textBoxSize['height'];
-                        if ($textBoxSize['height'] <= $this->maxTextHeight) {
-                            break;
-                        }
-                    }
-                }
-
-                break;
-            }
-        }
-        $this->text = $text;
-    }
-
-    /**
-     * @throws ImagickException
-     * @throws ImagickDrawException
      * @throws ImagickPixelException
      */
     protected function createText(): void
@@ -464,24 +431,41 @@ class OpenGraphImages
      * @throws ImagickException
      * @throws ImagickDrawException
      */
-    protected function setAppNameParameters(): void
+    protected function setTextParameters(): void
     {
-        $this->setAppNameBox();
-        $this->setAppNameCoordinates();
+        $this->setTextToBox();
+        $this->setTextCoordinates();
+    }
 
-        switch ($this->appNameDecorationStyle) {
-            case 'line':
-                $this->setLineCoordinates();
+    /**
+     * @throws ImagickException
+     * @throws ImagickDrawException
+     */
+    protected function setTextToBox(): void
+    {
+        $this->maxTextWidth = intval($this->imageWidth * 0.8);
+        $this->maxTextHeight = intval($this->imageHeight * 0.6);
 
+        $this->fitTextToWidth();
+        $this->fitTextToHeight();
+    }
+
+    /**
+     * @throws ImagickException
+     * @throws ImagickDrawException
+     */
+    protected function fitTextToWidth(): void
+    {
+        for ($wordwrap = 50; $wordwrap >= 20; $wordwrap--) {
+            $this->text = $this->multiLine($this->text, $wordwrap);
+            $textBoxSize = $this->getTextBoxSize($this->text, $this->font, $this->fontSize);
+
+            $this->textBoxWidth = $textBoxSize['width'];
+            $this->textBoxHeight = $textBoxSize['height'];
+
+            if ($this->textBoxWidth <= $this->maxTextWidth) {
                 break;
-            case 'label':
-                $this->setLabelCoordinates();
-
-                break;
-            case 'rectangle':
-                $this->setRectangleCoordinates();
-
-                break;
+            }
         }
     }
 
@@ -489,13 +473,24 @@ class OpenGraphImages
      * @throws ImagickException
      * @throws ImagickDrawException
      */
-    protected function setTextParameters(): void
+    protected function fitTextToHeight(): void
     {
-        $this->maxTextWidth = intval($this->imageWidth * 0.8);
-        $this->maxTextHeight = intval($this->imageHeight * 0.6);
+        if ($this->textBoxHeight > $this->maxTextHeight) {
+            for ($countLines = count(explode("\n", $this->text)); $countLines > 1; $countLines--) {
+                $position = mb_strrpos($this->text, "\n") ?: null;
+                $this->text = mb_substr($this->text, 0, $position);
 
-        $this->fitTextToBox();
+                $textBoxSize = $this->getTextBoxSize($this->text, $this->font, $this->fontSize);
+                $this->textBoxHeight = $textBoxSize['height'];
+                if ($textBoxSize['height'] <= $this->maxTextHeight) {
+                    break;
+                }
+            }
+        }
+    }
 
+    protected function setTextCoordinates(): void
+    {
         $paddingX = intval(($this->imageWidth - $this->maxTextWidth) / 2);
 
         switch (strtolower($this->textAlignment)) {
@@ -534,6 +529,31 @@ class OpenGraphImages
         }
 
         $this->textStartY = intval(($this->imageHeight - $this->textBoxHeight) / 2);
+    }
+
+    /**
+     * @throws ImagickException
+     * @throws ImagickDrawException
+     */
+    protected function setAppNameParameters(): void
+    {
+        $this->setAppNameBox();
+        $this->setAppNameCoordinates();
+
+        switch ($this->appNameDecorationStyle) {
+            case 'line':
+                $this->setLineCoordinates();
+
+                break;
+            case 'label':
+                $this->setLabelCoordinates();
+
+                break;
+            case 'rectangle':
+                $this->setRectangleCoordinates();
+
+                break;
+        }
     }
 
     /**
