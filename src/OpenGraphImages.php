@@ -291,9 +291,7 @@ class OpenGraphImages
         $filename = $info['filename'];
 
         if (!is_dir($dirname)) {
-            if (!@mkdir($dirname, 0755, true)) {
-                return false;
-            }
+            mkdir($dirname, 0755, true);
         }
 
         return (bool)@file_put_contents($dirname . '/' . $filename . '.png', $this->imageBlob);

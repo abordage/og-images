@@ -67,13 +67,6 @@ class OpenGraphImagesTest extends TestCase
         $result = $openGraphImages->make($text)->save($path);
         $this->assertTrue($result);
         $this->assertEquals('image/png', mime_content_type($path));
-
-        vfsStream::setup('virtualReadOnlyDir', 644);
-        $virtualReadOnlyDir = vfsStream::url('virtualReadOnlyDir');
-
-        $openGraphImages = new OpenGraphImages(['app_name' => 'website.test']);
-        $result = $openGraphImages->make($text)->save($virtualReadOnlyDir);
-        $this->assertFalse($result);
     }
 
     /**
