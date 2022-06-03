@@ -2,6 +2,10 @@
 
 All notable changes to `og-images` will be documented in this file.
 
+## 0.2.2 - 2022-06-03
+
+**Full Changelog**: https://github.com/abordage/og-images/compare/0.2.1...0.2.2
+
 ## 0.2.1 - 2022-06-03
 
 **Full Changelog**: https://github.com/abordage/og-images/compare/0.2.0...0.2.1
