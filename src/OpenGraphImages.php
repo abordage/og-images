@@ -271,7 +271,7 @@ class OpenGraphImages
         return $this;
     }
 
-    public function makeCustom(string $text, int $width = 1200, int $height = 630): OpenGraphImages
+    public function makeCustom(string $text, int $width, int $height): OpenGraphImages
     {
         $this->imageWidth = $width;
         $this->imageHeight = $height;
