@@ -254,36 +254,17 @@ class OpenGraphImages
             case 'facebook':
             default:
                 $this->imageHeight = 630;
+
                 break;
             case 'twitter':
                 $this->imageHeight = 600;
+
                 break;
             case 'vk':
                 $this->imageHeight = 536;
+
                 break;
         }
-
-        $this->createImage($text);
-
-        return $this;
-    }
-
-    public function makeTwitter(string $text): OpenGraphImages
-    {
-        // https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image
-        $this->imageWidth = 1200;
-        $this->imageHeight = 600;
-
-        $this->createImage($text);
-
-        return $this;
-    }
-
-    public function makeVk(string $text): OpenGraphImages
-    {
-        // https://dev.vk.com/api/posts
-        $this->imageWidth = 1200;
-        $this->imageHeight = 536;
 
         $this->createImage($text);
 
