@@ -42,6 +42,24 @@ class OpenGraphImagesTest extends TestCase
     /**
      * @dataProvider textProvider
      */
+    public function testMakeCustom(string $text): void
+    {
+        $sizesCollection = [
+            [500, 500],
+            [600, 400],
+        ];
+
+        foreach ($sizesCollection as $sizes) {
+            [$width, $height] = $sizes;
+            $result = $this->openGraphImages->makeCustom($text, $width, $height);
+            $this->assertInstanceOf(OpenGraphImages::class, $result);
+            $this->assertEquals('image/png', $this->getMimeTypeFromString($result->get()));
+        }
+    }
+
+    /**
+     * @dataProvider textProvider
+     */
     public function testSave(string $text): void
     {
         $path = $this->directoryPath . '/test1/test2/test-image.png';
