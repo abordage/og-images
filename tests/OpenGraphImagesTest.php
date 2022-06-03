@@ -30,6 +30,13 @@ class OpenGraphImagesTest extends TestCase
         $result = $this->openGraphImages->make($text);
         $this->assertInstanceOf(OpenGraphImages::class, $result);
         $this->assertEquals('image/png', $this->getMimeTypeFromString($result->get()));
+
+        $presets = ['opengraph', 'facebook', 'twitter', 'vk'];
+        foreach ($presets as $preset) {
+            $result = $this->openGraphImages->make($text, $preset);
+            $this->assertInstanceOf(OpenGraphImages::class, $result);
+            $this->assertEquals('image/png', $this->getMimeTypeFromString($result->get()));
+        }
     }
 
     /**

@@ -242,11 +242,26 @@ class OpenGraphImages
         }
     }
 
-    public function make(string $text, int $width = 1200, int $height = 630): OpenGraphImages
+    public function make(string $text, string $preset = 'opengraph'): OpenGraphImages
     {
         // https://developers.facebook.com/docs/sharing/webmasters/images/
-        $this->imageWidth = $width;
-        $this->imageHeight = $height;
+        // https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image
+        // https://dev.vk.com/api/posts
+
+        $this->imageWidth = 1200;
+        switch (strtolower($preset)) {
+            case 'opengraph':
+            case 'facebook':
+            default:
+                $this->imageHeight = 630;
+                break;
+            case 'twitter':
+                $this->imageHeight = 600;
+                break;
+            case 'vk':
+                $this->imageHeight = 536;
+                break;
+        }
 
         $this->createImage($text);
 
