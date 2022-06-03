@@ -62,8 +62,6 @@ composer require abordage/og-images
 ## Quick start
 
 ```php
-<?php
-
 use Abordage\OpenGraphImages\OpenGraphImages;
 
 require __DIR__ . ' /vendor/autoload.php';
@@ -85,14 +83,19 @@ $openGraphImage->make($text)->save($path);
 ```php
 $openGraphImage = new OpenGraphImages($config);
 
-// for <og:image> (default, facebook and other)
+// for <og:image>
 $openGraphImage->make($text)->save($path);
+// or
+$openGraphImage->make($text, 'opengraph')->save($path);
 
 // for <twitter:image>
-$openGraphImage->makeTwitter($text)->save($path);
+$openGraphImage->make($text, 'twitter')->save($path);
 
 // for <vk:image>
-$openGraphImage->makeVk($text)->save($path);
+$openGraphImage->make($text, 'vk')->save($path);
+
+// custom size
+$openGraphImage->makeCustom($text, 600, 400)->save($path);
 ```
 
 After generation, you need to somehow organize the relationship of images with a specific page (for example, attach to a
@@ -249,21 +252,22 @@ $config = [
 
 ## API Reference
 
-| Method                                                     | Returns | Added in |
-|------------------------------------------------------------|:-------:|:--------:|
-| `make(string $text, int $width = 1200, int $height = 630)` |  self   |  0.1.0   |
-| `makeTwitter(string $text)`                                |  self   |  0.1.0   |
-| `makeVk(string $text)`                                     |  self   |  0.1.0   |
-| `get()`                                                    | string  |  0.1.0   |
-| `save(string $path)`                                       | boolean |  0.1.0   |
+| Method                                                           | Returns | Added in | Changed in |
+|------------------------------------------------------------------|:-------:|:--------:|:----------:|
+| `make(string $text, string $preset = 'opengraph')`               |  self   |  0.1.0   |   0.2.0    |
+| `makeCustom(string $text, int $width = 1200, int $height = 630)` |  self   |  0.2.0   |     -      |
+| `get()`                                                          | string  |  0.1.0   |     -      |
+| `save(string $path)`                                             | boolean |  0.1.0   |     -      |
 
 ### Images aspect ratios
 
-| Method                                              | Aspect ratios       |     Docs      |
-|-----------------------------------------------------|:--------------------|:-------------:|
-| `make(string $text)`                                | 1200 x 630 (1.91:1) |   [fb][fb]    |
-| `makeTwitter(string $text)`                         | 1200 x 600 (2:1)    | [twitter][tw] |
-| `makeVk(string $text)`                              | 1200 x 536 (2.2:1)  |   [vk][vk]    |
+| Preset                            | Aspect ratios       |     Docs      |
+|-----------------------------------|:--------------------|:-------------:|
+| `make(string $text)`              | 1200 x 630 (1.91:1) |               |
+| `make(string $text, 'opengraph')` | 1200 x 630 (1.91:1) |               |
+| `make(string $text, 'facebook')`  | 1200 x 630 (1.91:1) |   [fb][fb]    |
+| `make(string $text, 'twitter')`   | 1200 x 600 (2:1)    | [twitter][tw] |
+| `make(string $text, 'vk')`        | 1200 x 536 (2.2:1)  |   [vk][vk]    |
 
 [fb]: https://developers.facebook.com/docs/sharing/webmasters/images/
 
@@ -287,7 +291,6 @@ or
 
 ```bash
 composer test:phpunit
-composer test:phpunit-coverage
 composer test:phpstan
 composer test:phpcs
 ```
