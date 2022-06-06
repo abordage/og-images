@@ -286,6 +286,17 @@ class OpenGraphImages
         return $this->imageBlob;
     }
 
+    public function getImageSizes(): array
+    {
+        if (isset($this->imageWidth) && isset($this->imageHeight)) {
+            return [
+                'width' => $this->imageWidth,
+                'height' => $this->imageHeight
+            ];
+        }
+        return [];
+    }
+
     public function save(string $path): bool
     {
         if (is_null($this->imageBlob)) {

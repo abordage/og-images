@@ -107,6 +107,17 @@ $openGraphImage = new OpenGraphImages($config);
 $imageBlob = $openGraphImage->make($text)->get();
 ```
 
+If after generation you need to get sizes of the image, you can get it as follows:
+
+```php
+$openGraphImage->make($text, 'twitter')->get();
+$imageSizes = $openGraphImage->getImageSizes();
+// return [
+    'width' => 1200,
+    'height' => 600
+];
+```
+
 ## Configuration
 
 ```php
@@ -252,12 +263,13 @@ $config = [
 
 ## API Reference
 
-| Method                                               | Returns | Added in | Changed in |
-|------------------------------------------------------|:-------:|:--------:|:----------:|
-| `make(string $text, string $preset = 'opengraph')`   |  self   |  0.1.0   |   0.2.0    |
-| `makeCustom(string $text, int $width, int $height)`  |  self   |  0.2.0   |     -      |
-| `get()`                                              | string  |  0.1.0   |     -      |
-| `save(string $path)`                                 | boolean |  0.1.0   |     -      |
+| Method                                              | Returns | Added in | Changed in |
+|-----------------------------------------------------|:-------:|:--------:|:----------:|
+| `make(string $text, string $preset = 'opengraph')`  |  self   |  0.1.0   |   0.2.0    |
+| `makeCustom(string $text, int $width, int $height)` |  self   |  0.2.0   |     -      |
+| `get()`                                             | string  |  0.1.0   |     -      |
+| `save(string $path)`                                | boolean |  0.1.0   |     -      |
+| `getImageSizes()`                                   |  array  |  0.3.0   |     -      |
 
 ### Images aspect ratios
 

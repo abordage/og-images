@@ -76,6 +76,25 @@ class OpenGraphImagesTest extends TestCase
 
     /**
      * @dataProvider textProvider
+     */
+    public function testGetImageSizes(string $text): void
+    {
+        $openGraphImages = new OpenGraphImages(['app_name' => 'website.test']);
+        $result = $openGraphImages->getImageSizes();
+        $this->assertEquals([], $result);
+
+        $openGraphImages = new OpenGraphImages(['app_name' => 'website.test']);
+        $openGraphImages->make($text)->get();
+        $result = $openGraphImages->getImageSizes();
+
+        foreach ($result as $key => $value) {
+            $this->assertIsInt($value);
+            $this->assertGreaterThan(0, $value);
+        }
+    }
+
+    /**
+     * @dataProvider textProvider
      * @throws ReflectionException
      */
     public function testMultiLine(string $text): void
