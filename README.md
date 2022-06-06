@@ -113,9 +113,9 @@ If after generation you need to get sizes of the image, you can get it as follow
 $openGraphImage->make($text, 'twitter')->get();
 $imageSizes = $openGraphImage->getImageSizes();
 // return [
-    'width' => 1200,
-    'height' => 600
-];
+//    'width' => 1200,
+//    'height' => 600
+// ];
 ```
 
 ## Configuration
