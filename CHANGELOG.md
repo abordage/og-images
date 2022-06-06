@@ -6,7 +6,7 @@ All notable changes to `og-images` will be documented in this file.
 
 ### What's Changed
 
-- Add getImageSizes() method
+- Added getImageSizes() method
 - Bump peter-evans/create-issue-from-file from 3 to 4 by @dependabot in https://github.com/abordage/og-images/pull/1
 
 ### New Contributors
