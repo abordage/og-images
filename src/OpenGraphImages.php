@@ -291,9 +291,10 @@ class OpenGraphImages
         if (isset($this->imageWidth) && isset($this->imageHeight)) {
             return [
                 'width' => $this->imageWidth,
-                'height' => $this->imageHeight
+                'height' => $this->imageHeight,
             ];
         }
+
         return [];
     }
 
