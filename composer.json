@@ -26,8 +26,7 @@
         "friendsofphp/php-cs-fixer": "^3.0",
         "mikey179/vfsstream": "^1.6",
         "phpstan/phpstan": "^1.0",
-        "phpunit/phpunit": "^9.5",
-        "squizlabs/php_codesniffer": "^3.6"
+        "phpunit/phpunit": "^9.5"
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
@@ -45,26 +44,24 @@
         "sort-packages": true
     },
     "scripts": {
-        "php-cs-fixer:fix": "vendor/bin/php-cs-fixer fix --diff",
+        "phpcsf": "vendor/bin/php-cs-fixer fix --diff",
+        "phpstan:generate-baseline": "vendor/bin/phpstan --generate-baseline",
         "test:all": [
-            "@test:phpcs",
+            "@test:phpcsf",
             "@test:phpstan",
             "@test:phpunit"
         ],
-        "test:php-cs-fixer": "vendor/bin/php-cs-fixer fix --dry-run",
-        "test:phpcs": "vendor/bin/phpcs -n -p --colors",
+        "test:phpcsf": "vendor/bin/php-cs-fixer fix --dry-run",
         "test:phpstan": "vendor/bin/phpstan analyse",
-        "test:phpstan-generate-baseline": "vendor/bin/phpstan --generate-baseline",
         "test:phpunit": "vendor/bin/phpunit --colors=always",
         "test:phpunit-coverage": "vendor/bin/phpunit --coverage-clover build/coverage.xml"
     },
     "scripts-descriptions": {
-        "php-cs-fixer": "Run PHP-CS-Fixer",
+        "phpcsf": "Run PHP-CS-Fixer fix",
+        "phpstan:generate-baseline": "Generate baseline for PHPStan",
         "test:all": "Run all code analysis and tests",
-        "test:php-cs-fixer": "Run PHP-CS-Fixer",
-        "test:phpcs": "Run PHP Code Sniffer",
+        "test:phpcsf": "Run PHP-CS-Fixer test",
         "test:phpstan": "Run PHPStan",
-        "test:phpstan-generate-baseline": "Generate baseline for PHPStan",
         "test:phpunit": "Run PHPUnit",
         "test:phpunit-coverage": "Run PHPUnit with coverage"
     }
