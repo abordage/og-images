@@ -305,7 +305,7 @@ class OpenGraphImages
         }
 
         $info = pathinfo($path);
-        $dirname = $info['dirname'];
+        $dirname = $info['dirname'] ?? '';
         $filename = $info['filename'];
 
         if (!is_dir($dirname)) {
@@ -395,7 +395,7 @@ class OpenGraphImages
 
         // corrections
         $dimensions = $this->image->queryFontMetrics($draw, $this->text);
-        $this->textStartY = $this->textStartY + $dimensions['characterHeight'];
+        $this->textStartY = $this->textStartY + (int)$dimensions['characterHeight'];
 
         $this->image->annotateImage($draw, $this->textStartX, $this->textStartY, 0, $this->text);
     }
@@ -420,7 +420,7 @@ class OpenGraphImages
 
         // corrections
         $dimensions = $this->image->queryFontMetrics($draw, $this->appName, false);
-        $this->appNameStartY = $this->appNameStartY + $dimensions['characterHeight'];
+        $this->appNameStartY = $this->appNameStartY + (int)$dimensions['characterHeight'];
 
         $this->image->annotateImage($draw, $this->appNameStartX, $this->appNameStartY, 0, $this->appName);
     }
