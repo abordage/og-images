@@ -48,7 +48,7 @@ messengers. [Learn more](https://ogp.me) about Open Graph.
 
 ## Requirements
 
-- PHP 7.4 - 8.2
+- PHP 7.4 - 8.3
 - The Imagick PHP extension
 
 ## Installation
